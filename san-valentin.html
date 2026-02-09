@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cofre Legendario</title>
+    <link href="https://fonts.googleapis.com/css2?family=Lilita+One&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Lilita One', cursive;
+            overflow: hidden;
+            background: #1a0a2e;
+        }
+
+        /* Fondo del juego */
+        .game-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('./assets/fondo.png');
+            background-position: center center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+
+        .game-background::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        /* Header estilo CR */
+        .cr-header {
+            background: linear-gradient(180deg, #4a3728 0%, #2d1f16 100%);
+            border: 3px solid #1a1209;
+            border-radius: 10px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            box-shadow:
+                0 4px 0 #1a1209,
+                0 8px 15px rgba(0,0,0,0.5),
+                inset 0 2px 0 rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .cr-header::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            right: 3px;
+            height: 50%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
+            border-radius: 7px 7px 0 0;
+        }
+
+        .legendary-title {
+            color: #a855f7;
+            font-size: clamp(20px, 6vw, 28px);
+            text-transform: uppercase;
+            text-shadow:
+                0 0 10px #a855f7,
+                0 0 20px #a855f7,
+                0 3px 0 #1a1209,
+                0 4px 0 #000;
+            letter-spacing: 2px;
+        }
+
+        /* Cofre */
+        .chest-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+        }
+
+        .chest-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(168, 85, 247, 0.2) 40%, transparent 70%);
+            animation: glow-pulse 2s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes glow-pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+        }
+
+        .chest-wrapper {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.2s;
+            z-index: 5;
+        }
+
+        .chest-wrapper:active {
+            transform: scale(0.95);
+        }
+
+        .chest-img {
+            width: clamp(180px, 50vw, 240px);
+            height: auto;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
+            transition: all 0.3s;
+        }
+
+        .chest-wrapper:hover .chest-img {
+            filter: drop-shadow(0 10px 30px rgba(168, 85, 247, 0.8));
+        }
+
+        .chest-wrapper.opened .chest-img {
+            animation: chest-open 0.6s forwards;
+        }
+
+        @keyframes chest-open {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.1) rotate(-5deg); }
+            60% { transform: scale(1.2) rotate(5deg); }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        /* Tap indicator */
+        .tap-indicator {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tap-text {
+            color: #fff;
+            font-size: clamp(16px, 4vw, 20px);
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            animation: tap-bounce 1.5s ease-in-out infinite;
+        }
+
+        .tap-arrow {
+            font-size: 24px;
+            animation: arrow-bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes tap-bounce {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes arrow-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Rayos de luz al abrir */
+        .light-burst {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.9) 0%, transparent 60%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .light-burst.active {
+            animation: burst 0.8s forwards;
+        }
+
+        @keyframes burst {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: scale(2); }
+        }
+
+        /* Partículas legendarias */
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 55;
+            overflow: hidden;
+        }
+
+        .legendary-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #a855f7;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7;
+        }
+
+        /* CARTA ESTILO CLASH ROYALE */
+        .card-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .card-overlay.show {
+            display: flex;
+            animation: overlay-in 0.3s forwards;
+        }
+
+        @keyframes overlay-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .cr-card {
+            width: 100%;
+            max-width: 320px;
+            background: linear-gradient(180deg, #3d2a5c 0%, #2a1d40 50%, #1f1530 100%);
+            border-radius: 20px;
+            border: 4px solid #a855f7;
+            box-shadow:
+                0 0 30px rgba(168, 85, 247, 0.6),
+                0 0 60px rgba(168, 85, 247, 0.3),
+                0 15px 40px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+            overflow: hidden;
+            transform: scale(0);
+            animation: card-reveal 0.8s 0.3s forwards;
+        }
+
+        @keyframes card-reveal {
+            0% { transform: scale(0) rotateY(90deg); }
+            60% { transform: scale(1.1) rotateY(-10deg); }
+            80% { transform: scale(0.95) rotateY(5deg); }
+            100% { transform: scale(1) rotateY(0); }
+        }
+
+        /* Card header */
+        .card-header {
+            background: linear-gradient(180deg, #a855f7 0%, #7c3aed 100%);
+            padding: 10px 15px;
+            text-align: center;
+            border-bottom: 3px solid #6d28d9;
+            position: relative;
+        }
+
+        .card-header::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 10px;
+            right: 10px;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+            border-radius: 10px;
+        }
+
+        .card-rarity {
+            color: #fff;
+            font-size: clamp(14px, 4vw, 18px);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+        }
+
+        /* Card image area */
+        .card-image-area {
+            position: relative;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 180px;
+            background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
+        }
+
+        .card-character {
+            width: clamp(120px, 35vw, 160px);
+            height: auto;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            animation: float-char 3s ease-in-out infinite;
+        }
+
+        @keyframes float-char {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .card-sparkles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            font-size: 16px;
+            animation: sparkle-float 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle-float {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* Card content */
+        .card-content {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .card-question {
+            color: #fff;
+            font-size: clamp(20px, 5.5vw, 26px);
+            text-shadow:
+                0 2px 0 #1a1209,
+                0 3px 6px rgba(0,0,0,0.5);
+            line-height: 1.3;
+            margin-bottom: 25px;
+        }
+
+        /* Botón estilo CR */
+        .cr-btn {
+            padding: 16px 50px;
+            font-family: 'Lilita One', cursive;
+            font-size: clamp(20px, 6vw, 26px);
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            transition: transform 0.1s;
+            -webkit-tap-highlight-color: transparent;
+            background: linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #16a34a 100%);
+            color: #fff;
+            box-shadow:
+                0 6px 0 #15803d,
+                0 10px 20px rgba(0,0,0,0.4),
+                inset 0 -2px 0 rgba(0,0,0,0.2);
+            text-shadow: 0 2px 0 #15803d;
+        }
+
+        .cr-btn::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 6px;
+            right: 6px;
+            height: 45%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+            border-radius: 12px 12px 50% 50%;
+        }
+
+        .cr-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 8px 0 #15803d,
+                0 12px 25px rgba(0,0,0,0.4),
+                inset 0 -2px 0 rgba(0,0,0,0.2);
+        }
+
+        .cr-btn:active {
+            transform: translateY(4px);
+            box-shadow:
+                0 2px 0 #15803d,
+                0 4px 10px rgba(0,0,0,0.4),
+                inset 0 -2px 0 rgba(0,0,0,0.2);
+        }
+
+        /* Pantalla de éxito */
+        .success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('./assets/fondo.png');
+            background-position: center center;
+            background-size: cover;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .success-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(236, 72, 153, 0.3) 0%, rgba(0,0,0,0.6) 100%);
+        }
+
+        .success-overlay.show {
+            display: flex;
+            animation: success-in 0.5s forwards;
+        }
+
+        @keyframes success-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+        }
+
+        .success-characters {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .success-char {
+            width: clamp(100px, 28vw, 150px);
+            height: auto;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+        }
+
+        .char-left {
+            animation: char-bounce-left 2s ease-in-out infinite;
+        }
+
+        .char-right {
+            animation: char-bounce-right 2s ease-in-out infinite 0.5s;
+        }
+
+        @keyframes char-bounce-left {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        @keyframes char-bounce-right {
+            0%, 100% { transform: translateY(0) rotate(5deg); }
+            50% { transform: translateY(-20px) rotate(-5deg); }
+        }
+
+        .success-heart {
+            font-size: clamp(50px, 15vw, 80px);
+            animation: heart-mega-beat 0.8s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px rgba(236, 72, 153, 0.8));
+        }
+
+        @keyframes heart-mega-beat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .success-banner {
+            background: linear-gradient(180deg, #ec4899 0%, #db2777 50%, #be185d 100%);
+            padding: 20px 40px;
+            border-radius: 15px;
+            border: 4px solid #9d174d;
+            box-shadow:
+                0 8px 0 #831843,
+                0 12px 30px rgba(0,0,0,0.5),
+                inset 0 2px 0 rgba(255,255,255,0.3);
+            position: relative;
+        }
+
+        .success-banner::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 10px;
+            right: 10px;
+            height: 40%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+            border-radius: 12px;
+        }
+
+        .success-text {
+            color: #fff;
+            font-size: clamp(28px, 8vw, 42px);
+            text-shadow:
+                0 3px 0 #9d174d,
+                0 4px 10px rgba(0,0,0,0.4);
+            letter-spacing: 1px;
+        }
+
+        /* Confeti mejorado */
+        .confetti-piece {
+            position: fixed;
+            top: -20px;
+            z-index: 250;
+            pointer-events: none;
+        }
+
+        .confetti-piece.heart {
+            font-size: 20px;
+            animation: confetti-heart-fall linear forwards;
+        }
+
+        @keyframes confetti-heart-fall {
+            to {
+                top: 110vh;
+                transform: rotate(720deg) scale(0.5);
+            }
+        }
+
+        .confetti-piece.square {
+            width: 12px;
+            height: 12px;
+            animation: confetti-square-fall linear forwards;
+        }
+
+        @keyframes confetti-square-fall {
+            to {
+                top: 110vh;
+                transform: rotate(1080deg);
+            }
+        }
+
+        /* Ocultar elementos */
+        .hidden-section {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fondo -->
+    <div class="game-background"></div>
+
+    <!-- Pantalla del cofre -->
+    <div class="container" id="chestScreen">
+        <div class="cr-header">
+            <div class="legendary-title">Cofre Legendario</div>
+        </div>
+
+        <div class="chest-area">
+            <div class="chest-glow"></div>
+            <div class="chest-wrapper" id="chestWrapper" onclick="openChest()">
+                <img src="./assets/cofre.png" alt="Cofre Legendario" class="chest-img" id="chestImg">
+            </div>
+            <div class="tap-indicator" id="tapIndicator">
+                <span class="tap-arrow">👆</span>
+                <span class="tap-text">¡Toca para abrir!</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Efecto de luz -->
+    <div class="light-burst" id="lightBurst"></div>
+
+    <!-- Partículas -->
+    <div class="particles-container" id="particlesContainer"></div>
+
+    <!-- Carta -->
+    <div class="card-overlay" id="cardOverlay">
+        <div class="cr-card">
+            <div class="card-header">
+                <div class="card-rarity">Legendaria</div>
+            </div>
+            <div class="card-image-area">
+                <div class="card-sparkles" id="sparklesContainer"></div>
+                <img src="./assets/bruja.webp" alt="Carta" class="card-character">
+            </div>
+            <div class="card-content">
+                <div class="card-question">¿Quieres ser mi San Valentín?</div>
+                <button class="cr-btn" onclick="sayYes()">Sí</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pantalla de éxito -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-content">
+            <div class="success-characters">
+                <img src="./assets/rey_esqueleto.png" alt="Rey Esqueleto" class="success-char char-left">
+                <div class="success-heart">💖</div>
+                <img src="./assets/bruja.webp" alt="Bruja" class="success-char char-right">
+            </div>
+            <div class="success-banner">
+                <div class="success-text">¡Te amo Gusita!</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables
+        let chestOpened = false;
+
+        // Crear sparkles en la carta
+        function createSparkles() {
+            const container = document.getElementById('sparklesContainer');
+            const positions = [
+                {x: '10%', y: '20%'}, {x: '85%', y: '15%'},
+                {x: '15%', y: '70%'}, {x: '90%', y: '75%'},
+                {x: '50%', y: '10%'}, {x: '50%', y: '85%'}
+            ];
+
+            positions.forEach((pos, i) => {
+                const sparkle = document.createElement('span');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = '✨';
+                sparkle.style.left = pos.x;
+                sparkle.style.top = pos.y;
+                sparkle.style.animationDelay = (i * 0.3) + 's';
+                container.appendChild(sparkle);
+            });
+        }
+
+        // Crear partículas al abrir
+        function createBurstParticles() {
+            const container = document.getElementById('particlesContainer');
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'legendary-particle';
+
+                const angle = (Math.PI * 2 * i) / 30;
+                const velocity = 100 + Math.random() * 150;
+                const endX = centerX + Math.cos(angle) * velocity;
+                const endY = centerY + Math.sin(angle) * velocity;
+
+                particle.style.left = centerX + 'px';
+                particle.style.top = centerY + 'px';
+
+                particle.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                    { transform: `translate(${endX - centerX}px, ${endY - centerY}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 800,
+                    easing: 'cubic-bezier(0, 0.5, 0.5, 1)'
+                });
+
+                container.appendChild(particle);
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+
+        // Abrir cofre
+        function openChest() {
+            if (chestOpened) return;
+            chestOpened = true;
+
+            const wrapper = document.getElementById('chestWrapper');
+            const chestImg = document.getElementById('chestImg');
+            const tapIndicator = document.getElementById('tapIndicator');
+            const lightBurst = document.getElementById('lightBurst');
+
+            // Cambiar a cofre abierto
+            chestImg.src = './assets/cofre_abierto.png';
+            wrapper.classList.add('opened');
+            tapIndicator.style.display = 'none';
+
+            // Efectos
+            lightBurst.classList.add('active');
+            createBurstParticles();
+
+            // Vibrar en móvil
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+
+            // Mostrar carta
+            setTimeout(() => {
+                document.getElementById('chestScreen').classList.add('hidden-section');
+                document.getElementById('cardOverlay').classList.add('show');
+            }, 900);
+        }
+
+        // Decir sí
+        function sayYes() {
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100, 50, 200]);
+            }
+
+            document.getElementById('cardOverlay').classList.remove('show');
+            document.getElementById('successOverlay').classList.add('show');
+            startConfetti();
+        }
+
+        // Confeti
+        function startConfetti() {
+            const colors = ['#ec4899', '#f43f5e', '#a855f7', '#fbbf24', '#22c55e', '#3b82f6'];
+            const hearts = ['💖', '💕', '❤️', '💗', '💓', '✨'];
+
+            function createConfettiPiece() {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+
+                if (Math.random() > 0.4) {
+                    piece.classList.add('heart');
+                    piece.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                    piece.style.fontSize = (15 + Math.random() * 20) + 'px';
+                } else {
+                    piece.classList.add('square');
+                    piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                }
+
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+
+                document.body.appendChild(piece);
+
+                setTimeout(() => piece.remove(), 4000);
+            }
+
+            // Explosión inicial
+            for (let i = 0; i < 60; i++) {
+                setTimeout(createConfettiPiece, i * 30);
+            }
+
+            // Confeti continuo
+            setInterval(() => {
+                for (let i = 0; i < 3; i++) {
+                    createConfettiPiece();
+                }
+            }, 300);
+        }
+
+        // Inicializar
+        createSparkles();
+    </script>
+</body>
+</html>
