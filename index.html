@@ -24,7 +24,6 @@
             background: #1a0a2e;
         }
 
-        /* Fondo del juego */
         .game-background {
             position: fixed;
             top: 0;
@@ -38,16 +37,6 @@
             z-index: 0;
         }
 
-        .game-background::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.4) 100%);
-        }
-
         .container {
             text-align: center;
             position: relative;
@@ -57,43 +46,6 @@
             padding: 20px;
         }
 
-        /* Header estilo CR */
-        .cr-header {
-            background: linear-gradient(180deg, #4a3728 0%, #2d1f16 100%);
-            border: 3px solid #1a1209;
-            border-radius: 10px;
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            box-shadow:
-                0 4px 0 #1a1209,
-                0 8px 15px rgba(0,0,0,0.5),
-                inset 0 2px 0 rgba(255,255,255,0.1);
-            position: relative;
-        }
-
-        .cr-header::before {
-            content: '';
-            position: absolute;
-            top: 3px;
-            left: 3px;
-            right: 3px;
-            height: 50%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%);
-            border-radius: 7px 7px 0 0;
-        }
-
-        .legendary-title {
-            color: #a855f7;
-            font-size: clamp(20px, 6vw, 28px);
-            text-transform: uppercase;
-            text-shadow:
-                0 0 10px #a855f7,
-                0 0 20px #a855f7,
-                0 3px 0 #1a1209,
-                0 4px 0 #000;
-            letter-spacing: 2px;
-        }
-
         /* Cofre */
         .chest-area {
             position: relative;
@@ -101,7 +53,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 300px;
+            min-height: 350px;
         }
 
         .chest-glow {
@@ -111,78 +63,107 @@
             transform: translate(-50%, -50%);
             width: 350px;
             height: 350px;
-            background: radial-gradient(circle, rgba(168, 85, 247, 0.5) 0%, rgba(168, 85, 247, 0.2) 40%, transparent 70%);
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.6) 0%, rgba(168, 85, 247, 0.2) 40%, transparent 70%);
             animation: glow-pulse 2s ease-in-out infinite;
             pointer-events: none;
         }
 
         @keyframes glow-pulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
-            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+
+        /* Rayos giratorios */
+        .chest-rays {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            pointer-events: none;
+            animation: rays-rotate 20s linear infinite;
+        }
+
+        @keyframes rays-rotate {
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .ray {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 3px;
+            height: 200px;
+            background: linear-gradient(to top, rgba(168, 85, 247, 0.4), transparent);
+            transform-origin: bottom center;
         }
 
         .chest-wrapper {
             position: relative;
             cursor: pointer;
-            transition: transform 0.2s;
             z-index: 5;
+            animation: chest-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes chest-bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.02); }
         }
 
         .chest-wrapper:active {
+            animation: none;
             transform: scale(0.95);
         }
 
         .chest-img {
-            width: clamp(180px, 50vw, 240px);
+            width: clamp(200px, 55vw, 280px);
             height: auto;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
-            transition: all 0.3s;
+            filter: drop-shadow(0 15px 30px rgba(0,0,0,0.7));
         }
 
-        .chest-wrapper:hover .chest-img {
-            filter: drop-shadow(0 10px 30px rgba(168, 85, 247, 0.8));
+        .chest-wrapper.opened {
+            animation: chest-open 0.6s forwards;
         }
 
         .chest-wrapper.opened .chest-img {
-            animation: chest-open 0.6s forwards;
+            animation: none;
         }
 
         @keyframes chest-open {
             0% { transform: scale(1); }
-            30% { transform: scale(1.1) rotate(-5deg); }
-            60% { transform: scale(1.2) rotate(5deg); }
-            100% { transform: scale(1.3); opacity: 0; }
+            30% { transform: scale(1.15) rotate(-5deg); }
+            60% { transform: scale(1.25) rotate(5deg); }
+            100% { transform: scale(1.4); opacity: 0; }
         }
 
-        /* Tap indicator */
-        .tap-indicator {
-            margin-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+        /* Partículas flotantes alrededor del cofre */
+        .floating-sparkles {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            pointer-events: none;
         }
 
-        .tap-text {
-            color: #fff;
-            font-size: clamp(16px, 4vw, 20px);
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            animation: tap-bounce 1.5s ease-in-out infinite;
+        .float-sparkle {
+            position: absolute;
+            font-size: 20px;
+            animation: float-around 4s ease-in-out infinite;
         }
 
-        .tap-arrow {
-            font-size: 24px;
-            animation: arrow-bounce 1s ease-in-out infinite;
-        }
-
-        @keyframes tap-bounce {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        @keyframes arrow-bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+        @keyframes float-around {
+            0%, 100% {
+                opacity: 0.4;
+                transform: translateY(0) scale(0.8);
+            }
+            50% {
+                opacity: 1;
+                transform: translateY(-15px) scale(1.1);
+            }
         }
 
         /* Rayos de luz al abrir */
@@ -192,7 +173,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.9) 0%, transparent 60%);
+            background: radial-gradient(circle at center, rgba(168, 85, 247, 0.95) 0%, transparent 60%);
             opacity: 0;
             pointer-events: none;
             z-index: 50;
@@ -205,10 +186,10 @@
         @keyframes burst {
             0% { opacity: 0; transform: scale(0.5); }
             50% { opacity: 1; }
-            100% { opacity: 0; transform: scale(2); }
+            100% { opacity: 0; transform: scale(2.5); }
         }
 
-        /* Partículas legendarias */
+        /* Partículas explosión */
         .particles-container {
             position: fixed;
             top: 0;
@@ -222,21 +203,21 @@
 
         .legendary-particle {
             position: absolute;
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             background: #a855f7;
             border-radius: 50%;
-            box-shadow: 0 0 10px #a855f7, 0 0 20px #a855f7;
+            box-shadow: 0 0 15px #a855f7, 0 0 30px #a855f7;
         }
 
-        /* CARTA ESTILO CLASH ROYALE */
+        /* CARTA */
         .card-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             display: none;
             justify-content: center;
             align-items: center;
@@ -259,11 +240,11 @@
             max-width: 320px;
             background: linear-gradient(180deg, #3d2a5c 0%, #2a1d40 50%, #1f1530 100%);
             border-radius: 20px;
-            border: 4px solid #a855f7;
+            border: 5px solid #a855f7;
             box-shadow:
-                0 0 30px rgba(168, 85, 247, 0.6),
-                0 0 60px rgba(168, 85, 247, 0.3),
-                0 15px 40px rgba(0, 0, 0, 0.6),
+                0 0 40px rgba(168, 85, 247, 0.7),
+                0 0 80px rgba(168, 85, 247, 0.4),
+                0 20px 50px rgba(0, 0, 0, 0.7),
                 inset 0 1px 0 rgba(255,255,255,0.2);
             overflow: hidden;
             transform: scale(0);
@@ -277,10 +258,9 @@
             100% { transform: scale(1) rotateY(0); }
         }
 
-        /* Card header */
         .card-header {
             background: linear-gradient(180deg, #a855f7 0%, #7c3aed 100%);
-            padding: 10px 15px;
+            padding: 12px 15px;
             text-align: center;
             border-bottom: 3px solid #6d28d9;
             position: relative;
@@ -289,43 +269,42 @@
         .card-header::after {
             content: '';
             position: absolute;
-            top: 2px;
+            top: 3px;
             left: 10px;
             right: 10px;
             height: 40%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 100%);
             border-radius: 10px;
         }
 
         .card-rarity {
             color: #fff;
-            font-size: clamp(14px, 4vw, 18px);
+            font-size: clamp(16px, 4.5vw, 20px);
             text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            letter-spacing: 4px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
 
-        /* Card image area */
         .card-image-area {
             position: relative;
-            padding: 20px;
+            padding: 25px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 180px;
-            background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
+            min-height: 200px;
+            background: radial-gradient(ellipse at center, rgba(168, 85, 247, 0.25) 0%, transparent 70%);
         }
 
         .card-character {
-            width: clamp(120px, 35vw, 160px);
+            width: clamp(130px, 40vw, 180px);
             height: auto;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.6));
             animation: float-char 3s ease-in-out infinite;
         }
 
         @keyframes float-char {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-12px); }
         }
 
         .card-sparkles {
@@ -340,51 +319,55 @@
 
         .sparkle {
             position: absolute;
-            font-size: 16px;
+            font-size: 18px;
             animation: sparkle-float 2s ease-in-out infinite;
         }
 
         @keyframes sparkle-float {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
+            0%, 100% { opacity: 0.2; transform: scale(0.7); }
+            50% { opacity: 1; transform: scale(1.3); }
         }
 
-        /* Card content */
         .card-content {
-            padding: 20px;
+            padding: 25px;
             text-align: center;
         }
 
         .card-question {
             color: #fff;
-            font-size: clamp(20px, 5.5vw, 26px);
+            font-size: clamp(22px, 6vw, 28px);
             text-shadow:
                 0 2px 0 #1a1209,
-                0 3px 6px rgba(0,0,0,0.5);
+                0 4px 8px rgba(0,0,0,0.6);
             line-height: 1.3;
             margin-bottom: 25px;
         }
 
-        /* Botón estilo CR */
+        /* Botón con animación de brillo */
         .cr-btn {
-            padding: 16px 50px;
+            padding: 18px 60px;
             font-family: 'Lilita One', cursive;
-            font-size: clamp(20px, 6vw, 26px);
+            font-size: clamp(22px, 7vw, 30px);
             border: none;
             border-radius: 15px;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             position: relative;
-            transition: transform 0.1s;
-            -webkit-tap-highlight-color: transparent;
+            overflow: hidden;
             background: linear-gradient(180deg, #4ade80 0%, #22c55e 50%, #16a34a 100%);
             color: #fff;
             box-shadow:
-                0 6px 0 #15803d,
-                0 10px 20px rgba(0,0,0,0.4),
+                0 7px 0 #15803d,
+                0 12px 25px rgba(0,0,0,0.5),
                 inset 0 -2px 0 rgba(0,0,0,0.2);
             text-shadow: 0 2px 0 #15803d;
+            animation: btn-pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes btn-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
         }
 
         .cr-btn::before {
@@ -394,23 +377,37 @@
             left: 6px;
             right: 6px;
             height: 45%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.4) 0%, transparent 100%);
+            background: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, transparent 100%);
             border-radius: 12px 12px 50% 50%;
         }
 
-        .cr-btn:hover {
-            transform: translateY(-2px);
-            box-shadow:
-                0 8px 0 #15803d,
-                0 12px 25px rgba(0,0,0,0.4),
-                inset 0 -2px 0 rgba(0,0,0,0.2);
+        .cr-btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255,255,255,0.3) 50%,
+                transparent 60%
+            );
+            animation: btn-shine 3s ease-in-out infinite;
+        }
+
+        @keyframes btn-shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
         }
 
         .cr-btn:active {
-            transform: translateY(4px);
+            animation: none;
+            transform: translateY(5px);
             box-shadow:
                 0 2px 0 #15803d,
-                0 4px 10px rgba(0,0,0,0.4),
+                0 5px 15px rgba(0,0,0,0.5),
                 inset 0 -2px 0 rgba(0,0,0,0.2);
         }
 
@@ -439,7 +436,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(ellipse at center, rgba(236, 72, 153, 0.3) 0%, rgba(0,0,0,0.6) 100%);
+            background: radial-gradient(ellipse at center, rgba(236, 72, 153, 0.35) 0%, rgba(0,0,0,0.65) 100%);
         }
 
         .success-overlay.show {
@@ -462,14 +459,14 @@
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 10px;
-            margin-bottom: 30px;
+            gap: 15px;
+            margin-bottom: 35px;
         }
 
         .success-char {
-            width: clamp(100px, 28vw, 150px);
+            width: clamp(110px, 30vw, 160px);
             height: auto;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+            filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
         }
 
         .char-left {
@@ -482,58 +479,58 @@
 
         @keyframes char-bounce-left {
             0%, 100% { transform: translateY(0) rotate(-5deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(-25px) rotate(5deg); }
         }
 
         @keyframes char-bounce-right {
             0%, 100% { transform: translateY(0) rotate(5deg); }
-            50% { transform: translateY(-20px) rotate(-5deg); }
+            50% { transform: translateY(-25px) rotate(-5deg); }
         }
 
         .success-heart {
-            font-size: clamp(50px, 15vw, 80px);
+            font-size: clamp(60px, 18vw, 100px);
             animation: heart-mega-beat 0.8s ease-in-out infinite;
-            filter: drop-shadow(0 0 20px rgba(236, 72, 153, 0.8));
+            filter: drop-shadow(0 0 30px rgba(236, 72, 153, 0.9));
         }
 
         @keyframes heart-mega-beat {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            50% { transform: scale(1.25); }
         }
 
         .success-banner {
             background: linear-gradient(180deg, #ec4899 0%, #db2777 50%, #be185d 100%);
-            padding: 20px 40px;
-            border-radius: 15px;
-            border: 4px solid #9d174d;
+            padding: 22px 45px;
+            border-radius: 18px;
+            border: 5px solid #9d174d;
             box-shadow:
-                0 8px 0 #831843,
-                0 12px 30px rgba(0,0,0,0.5),
-                inset 0 2px 0 rgba(255,255,255,0.3);
+                0 10px 0 #831843,
+                0 15px 40px rgba(0,0,0,0.6),
+                inset 0 2px 0 rgba(255,255,255,0.35);
             position: relative;
         }
 
         .success-banner::before {
             content: '';
             position: absolute;
-            top: 3px;
-            left: 10px;
-            right: 10px;
+            top: 4px;
+            left: 12px;
+            right: 12px;
             height: 40%;
-            background: linear-gradient(180deg, rgba(255,255,255,0.3) 0%, transparent 100%);
-            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.35) 0%, transparent 100%);
+            border-radius: 14px;
         }
 
         .success-text {
             color: #fff;
-            font-size: clamp(28px, 8vw, 42px);
+            font-size: clamp(30px, 9vw, 48px);
             text-shadow:
                 0 3px 0 #9d174d,
-                0 4px 10px rgba(0,0,0,0.4);
-            letter-spacing: 1px;
+                0 5px 15px rgba(0,0,0,0.5);
+            letter-spacing: 2px;
         }
 
-        /* Confeti mejorado */
+        /* Confeti */
         .confetti-piece {
             position: fixed;
             top: -20px;
@@ -542,7 +539,7 @@
         }
 
         .confetti-piece.heart {
-            font-size: 20px;
+            font-size: 24px;
             animation: confetti-heart-fall linear forwards;
         }
 
@@ -554,8 +551,8 @@
         }
 
         .confetti-piece.square {
-            width: 12px;
-            height: 12px;
+            width: 14px;
+            height: 14px;
             animation: confetti-square-fall linear forwards;
         }
 
@@ -566,38 +563,27 @@
             }
         }
 
-        /* Ocultar elementos */
         .hidden-section {
             display: none !important;
         }
     </style>
 </head>
 <body>
-    <!-- Fondo -->
     <div class="game-background"></div>
 
     <!-- Pantalla del cofre -->
     <div class="container" id="chestScreen">
-        <div class="cr-header">
-            <div class="legendary-title">Cofre Legendario</div>
-        </div>
-
         <div class="chest-area">
             <div class="chest-glow"></div>
+            <div class="chest-rays" id="chestRays"></div>
+            <div class="floating-sparkles" id="floatingSparkles"></div>
             <div class="chest-wrapper" id="chestWrapper" onclick="openChest()">
-                <img src="./assets/cofre.png" alt="Cofre Legendario" class="chest-img" id="chestImg">
-            </div>
-            <div class="tap-indicator" id="tapIndicator">
-                <span class="tap-arrow">👆</span>
-                <span class="tap-text">¡Toca para abrir!</span>
+                <img src="./assets/cofre.png" alt="Cofre" class="chest-img" id="chestImg">
             </div>
         </div>
     </div>
 
-    <!-- Efecto de luz -->
     <div class="light-burst" id="lightBurst"></div>
-
-    <!-- Partículas -->
     <div class="particles-container" id="particlesContainer"></div>
 
     <!-- Carta -->
@@ -621,7 +607,7 @@
     <div class="success-overlay" id="successOverlay">
         <div class="success-content">
             <div class="success-characters">
-                <img src="./assets/rey_esqueleto.png" alt="Rey Esqueleto" class="success-char char-left">
+                <img src="./assets/rey_esqueleto.webp" alt="Rey Esqueleto" class="success-char char-left">
                 <div class="success-heart">💖</div>
                 <img src="./assets/bruja.webp" alt="Bruja" class="success-char char-right">
             </div>
@@ -632,16 +618,47 @@
     </div>
 
     <script>
-        // Variables
         let chestOpened = false;
 
+        // Crear rayos giratorios
+        function createRays() {
+            const container = document.getElementById('chestRays');
+            for (let i = 0; i < 12; i++) {
+                const ray = document.createElement('div');
+                ray.className = 'ray';
+                ray.style.transform = `rotate(${i * 30}deg)`;
+                container.appendChild(ray);
+            }
+        }
+
+        // Crear sparkles flotantes alrededor del cofre
+        function createFloatingSparkles() {
+            const container = document.getElementById('floatingSparkles');
+            const positions = [
+                {x: '10%', y: '30%'}, {x: '90%', y: '25%'},
+                {x: '5%', y: '70%'}, {x: '95%', y: '65%'},
+                {x: '25%', y: '10%'}, {x: '75%', y: '15%'},
+                {x: '20%', y: '85%'}, {x: '80%', y: '90%'}
+            ];
+
+            positions.forEach((pos, i) => {
+                const sparkle = document.createElement('span');
+                sparkle.className = 'float-sparkle';
+                sparkle.textContent = '✨';
+                sparkle.style.left = pos.x;
+                sparkle.style.top = pos.y;
+                sparkle.style.animationDelay = (i * 0.5) + 's';
+                container.appendChild(sparkle);
+            });
+        }
+
         // Crear sparkles en la carta
-        function createSparkles() {
+        function createCardSparkles() {
             const container = document.getElementById('sparklesContainer');
             const positions = [
-                {x: '10%', y: '20%'}, {x: '85%', y: '15%'},
-                {x: '15%', y: '70%'}, {x: '90%', y: '75%'},
-                {x: '50%', y: '10%'}, {x: '50%', y: '85%'}
+                {x: '8%', y: '15%'}, {x: '92%', y: '12%'},
+                {x: '12%', y: '75%'}, {x: '88%', y: '80%'},
+                {x: '50%', y: '5%'}, {x: '50%', y: '92%'}
             ];
 
             positions.forEach((pos, i) => {
@@ -650,23 +667,23 @@
                 sparkle.textContent = '✨';
                 sparkle.style.left = pos.x;
                 sparkle.style.top = pos.y;
-                sparkle.style.animationDelay = (i * 0.3) + 's';
+                sparkle.style.animationDelay = (i * 0.35) + 's';
                 container.appendChild(sparkle);
             });
         }
 
-        // Crear partículas al abrir
+        // Crear partículas explosión
         function createBurstParticles() {
             const container = document.getElementById('particlesContainer');
             const centerX = window.innerWidth / 2;
             const centerY = window.innerHeight / 2;
 
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 40; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'legendary-particle';
 
-                const angle = (Math.PI * 2 * i) / 30;
-                const velocity = 100 + Math.random() * 150;
+                const angle = (Math.PI * 2 * i) / 40;
+                const velocity = 120 + Math.random() * 180;
                 const endX = centerX + Math.cos(angle) * velocity;
                 const endY = centerY + Math.sin(angle) * velocity;
 
@@ -677,47 +694,39 @@
                     { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
                     { transform: `translate(${endX - centerX}px, ${endY - centerY}px) scale(0)`, opacity: 0 }
                 ], {
-                    duration: 800,
+                    duration: 900,
                     easing: 'cubic-bezier(0, 0.5, 0.5, 1)'
                 });
 
                 container.appendChild(particle);
-                setTimeout(() => particle.remove(), 800);
+                setTimeout(() => particle.remove(), 900);
             }
         }
 
-        // Abrir cofre
         function openChest() {
             if (chestOpened) return;
             chestOpened = true;
 
             const wrapper = document.getElementById('chestWrapper');
             const chestImg = document.getElementById('chestImg');
-            const tapIndicator = document.getElementById('tapIndicator');
             const lightBurst = document.getElementById('lightBurst');
 
-            // Cambiar a cofre abierto
             chestImg.src = './assets/cofre_abierto.png';
             wrapper.classList.add('opened');
-            tapIndicator.style.display = 'none';
 
-            // Efectos
             lightBurst.classList.add('active');
             createBurstParticles();
 
-            // Vibrar en móvil
             if (navigator.vibrate) {
                 navigator.vibrate([100, 50, 100]);
             }
 
-            // Mostrar carta
             setTimeout(() => {
                 document.getElementById('chestScreen').classList.add('hidden-section');
                 document.getElementById('cardOverlay').classList.add('show');
             }, 900);
         }
 
-        // Decir sí
         function sayYes() {
             if (navigator.vibrate) {
                 navigator.vibrate([100, 50, 100, 50, 200]);
@@ -728,7 +737,6 @@
             startConfetti();
         }
 
-        // Confeti
         function startConfetti() {
             const colors = ['#ec4899', '#f43f5e', '#a855f7', '#fbbf24', '#22c55e', '#3b82f6'];
             const hearts = ['💖', '💕', '❤️', '💗', '💓', '✨'];
@@ -737,39 +745,38 @@
                 const piece = document.createElement('div');
                 piece.className = 'confetti-piece';
 
-                if (Math.random() > 0.4) {
+                if (Math.random() > 0.35) {
                     piece.classList.add('heart');
                     piece.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                    piece.style.fontSize = (15 + Math.random() * 20) + 'px';
+                    piece.style.fontSize = (18 + Math.random() * 22) + 'px';
                 } else {
                     piece.classList.add('square');
                     piece.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+                    piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '3px';
                 }
 
                 piece.style.left = Math.random() * 100 + '%';
                 piece.style.animationDuration = (2 + Math.random() * 2) + 's';
 
                 document.body.appendChild(piece);
-
                 setTimeout(() => piece.remove(), 4000);
             }
 
-            // Explosión inicial
-            for (let i = 0; i < 60; i++) {
-                setTimeout(createConfettiPiece, i * 30);
+            for (let i = 0; i < 80; i++) {
+                setTimeout(createConfettiPiece, i * 25);
             }
 
-            // Confeti continuo
             setInterval(() => {
-                for (let i = 0; i < 3; i++) {
+                for (let i = 0; i < 4; i++) {
                     createConfettiPiece();
                 }
-            }, 300);
+            }, 250);
         }
 
         // Inicializar
-        createSparkles();
+        createRays();
+        createFloatingSparkles();
+        createCardSparkles();
     </script>
 </body>
 </html>
